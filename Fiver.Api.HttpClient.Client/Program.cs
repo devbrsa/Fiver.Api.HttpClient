@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Fiver.Api.HttpClient;
 
 namespace Fiver.Api.HttpClient.Client
 {
@@ -8,8 +10,12 @@ namespace Fiver.Api.HttpClient.Client
     {
         const string baseUri = "http://localhost:56942/movies";
 
+        static System.Net.Http.HttpClient _httpClient = new System.Net.Http.HttpClient();
+        static HttpRequestFactory _httpRequestFactory;
+
         static void Main(string[] args)
         {
+            _httpRequestFactory = new HttpRequestFactory(_httpClient);
             try
             {
                 while (true)
@@ -66,8 +72,9 @@ namespace Fiver.Api.HttpClient.Client
 
         private static async Task GetList()
         {
+            
             var requestUri = $"{baseUri}";
-            var response = await HttpRequestFactory.Get(requestUri);
+            var response = await _httpRequestFactory.Get(requestUri).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
             //Console.WriteLine(response.ContentAsString());
@@ -79,7 +86,7 @@ namespace Fiver.Api.HttpClient.Client
         private static async Task GetItem()
         {
             var requestUri = $"{baseUri}/1";
-            var response = await HttpRequestFactory.Get(requestUri);
+            var response = await _httpRequestFactory.Get(requestUri).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
             //Console.WriteLine(response.ContentAsString());
@@ -98,7 +105,7 @@ namespace Fiver.Api.HttpClient.Client
             };
 
             var requestUri = $"{baseUri}";
-            var response = await HttpRequestFactory.Post(requestUri, model);
+            var response = await _httpRequestFactory.Post(requestUri, model).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
             //Console.WriteLine(response.ContentAsString());
@@ -117,7 +124,7 @@ namespace Fiver.Api.HttpClient.Client
             };
 
             var requestUri = $"{baseUri}/4";
-            var response = await HttpRequestFactory.Put(requestUri, model);
+            var response = await _httpRequestFactory.Put(requestUri, model).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
         }
@@ -135,7 +142,7 @@ namespace Fiver.Api.HttpClient.Client
             };
 
             var requestUri = $"{baseUri}/4";
-            var response = await HttpRequestFactory.Patch(requestUri, model);
+            var response = await _httpRequestFactory.Patch(requestUri, model).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
         }
@@ -143,7 +150,7 @@ namespace Fiver.Api.HttpClient.Client
         private static async Task Delete()
         {
             var requestUri = $"{baseUri}/4";
-            var response = await HttpRequestFactory.Delete(requestUri);
+            var response = await _httpRequestFactory.Delete(requestUri).ConfigureAwait(false);
 
             Console.WriteLine($"Status: {response.StatusCode}");
         }

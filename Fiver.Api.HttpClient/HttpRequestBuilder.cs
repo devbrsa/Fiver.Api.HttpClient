@@ -10,6 +10,7 @@ namespace Fiver.Api.HttpClient
 {
     public class HttpRequestBuilder
     {
+        private readonly System.Net.Http.HttpClient _httpClient;
         private HttpMethod method = null;
         private string requestUri = "";
         private HttpContent content = null;
@@ -18,8 +19,9 @@ namespace Fiver.Api.HttpClient
         private TimeSpan timeout = new TimeSpan(0, 0, 15);
         private bool allowAutoRedirect = false;
 
-        public HttpRequestBuilder()
+        public HttpRequestBuilder(System.Net.Http.HttpClient httpClient)
         {
+            _httpClient = httpClient;
         }
 
         public HttpRequestBuilder AddMethod(HttpMethod method)
@@ -64,7 +66,7 @@ namespace Fiver.Api.HttpClient
             return this;
         }
 
-        public async Task<HttpResponseMessage> SendAsync()
+        public Task<HttpResponseMessage> SendAsync()
         {
             // Check required arguments
             EnsureArguments();
@@ -85,15 +87,8 @@ namespace Fiver.Api.HttpClient
             request.Headers.Accept.Clear();
             if (!string.IsNullOrEmpty(this.acceptHeader))
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(this.acceptHeader));
-
-            // Setup client
-            var handler = new HttpClientHandler();
-            handler.AllowAutoRedirect = this.allowAutoRedirect;
-
-            var client = new System.Net.Http.HttpClient(handler);
-            client.Timeout = this.timeout;
             
-            return await client.SendAsync(request);
+            return _httpClient.SendAsync(request);
         }
 
         #region " Private "
